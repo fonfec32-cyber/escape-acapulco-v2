@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Joueurs — Opération Acapulco</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      color: #f5c518;
+      font-family: 'Georgia', serif;
+    }
+
+    /* ── Page A5 centrée ────────────────────────────────────── */
+    .page {
+      width: 148mm;
+      min-height: 210mm;
+      margin: 0 auto;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12mm 10mm;
+    }
+
+    /* ── En-tête agence ─────────────────────────────────────── */
+    .agency {
+      font-size: 10px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #a08900;
+      margin-bottom: 5mm;
+      text-align: center;
+    }
+
+    /* ── Séparateur doré ────────────────────────────────────── */
+    .divider {
+      width: 70%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #f5c518, transparent);
+      margin-bottom: 7mm;
+    }
+
+    /* ── Titre principal ────────────────────────────────────── */
+    .main-title {
+      font-size: 32px;
+      font-weight: bold;
+      color: #f5c518;
+      text-align: center;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-shadow: 0 0 20px rgba(245, 197, 24, 0.6);
+      margin-bottom: 3mm;
+      line-height: 1.2;
+    }
+
+    .title-icon {
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 5mm;
+    }
+
+    /* ── Sous-titre ─────────────────────────────────────────── */
+    .subtitle {
+      font-size: 13px;
+      color: #d4a900;
+      text-align: center;
+      font-style: italic;
+      letter-spacing: 1px;
+      margin-bottom: 8mm;
+    }
+
+    /* ── Cadre QR ───────────────────────────────────────────── */
+    .qr-frame {
+      border: 2px solid #f5c518;
+      padding: 8mm;
+      background: #fff;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 7mm;
+      box-shadow: 0 0 25px rgba(245, 197, 24, 0.4);
+    }
+
+    /* ── URL ────────────────────────────────────────────────── */
+    .qr-url {
+      font-size: 10px;
+      color: #a08900;
+      letter-spacing: 1px;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 8mm;
+    }
+
+    /* ── Pied de page ───────────────────────────────────────── */
+    .footer {
+      font-size: 9px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #5a4200;
+      text-align: center;
+    }
+
+    /* ── Bouton impression ──────────────────────────────────── */
+    .no-print {
+      text-align: center;
+      padding: 20px;
+      background: #111;
+    }
+
+    .btn-print {
+      background: #f5c518;
+      color: #000;
+      border: none;
+      padding: 12px 32px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+
+    .btn-print:hover {
+      background: #ffd740;
+    }
+
+    /* ── Impression ─────────────────────────────────────────── */
+    @media print {
+      body {
+        background: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .page {
+        margin: 0;
+        width: 148mm;
+        min-height: 210mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Bouton impression ──────────────────────────────────── -->
+  <div class="no-print">
+    <button class="btn-print" onclick="window.print()">🖨️ Imprimer</button>
+  </div>
+
+  <!-- ── Page A5 ────────────────────────────────────────────── -->
+  <div class="page">
+    <div class="agency">Agence Acapulco</div>
+    <div class="divider"></div>
+
+    <div class="title-icon">🔍</div>
+    <div class="main-title">Opération<br>Acapulco</div>
+
+    <div class="divider" style="margin-top:5mm"></div>
+
+    <div class="subtitle">Scannez pour rejoindre l'enquête</div>
+
+    <div class="qr-frame">
+      <div id="qr-joueurs"></div>
+    </div>
+
+    <div class="qr-url">https://escape-acapulco-v2.onrender.com</div>
+
+    <div class="divider"></div>
+    <div class="footer">Bonne chance, Inspecteur</div>
+  </div>
+
+  <script>
+    new QRCode(document.getElementById('qr-joueurs'), {
+      text: 'https://escape-acapulco-v2.onrender.com',
+      width: 250,
+      height: 250,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  </script>
+
+</body>
+</html>
