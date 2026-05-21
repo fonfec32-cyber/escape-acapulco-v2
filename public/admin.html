@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Opération Acapulco</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c0f; --bg2: #111318; --bg3: #181c22;
+  --border: #2a2f3a; --accent: #e8b84b; --text: #e8eaf0; --text2: #9aa0b0; --text3: #5a6070;
+  --green: #38a169; --red: #e53e3e; --blue: #3182ce;
+  --mono: 'Share Tech Mono', monospace; --head: 'Oswald', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--mono); min-height: 100vh; }
+
+/* Auth */
+#screen-auth {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100vh; gap: 12px;
+}
+.auth-title { font-family: var(--head); font-size: 24px; letter-spacing: 4px; color: var(--accent); text-transform: uppercase; }
+.auth-sub { font-size: 11px; color: var(--text3); letter-spacing: 2px; margin-bottom: 8px; }
+.auth-input {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 2px;
+  color: var(--text); font-family: var(--mono); font-size: 16px;
+  padding: 12px 20px; outline: none; width: 280px; text-align: center;
+  letter-spacing: 4px;
+}
+.auth-input:focus { border-color: var(--accent); }
+.auth-btn {
+  background: var(--accent); color: #0a0c0f;
+  font-family: var(--head); font-size: 13px; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase;
+  padding: 10px 28px; border: none; border-radius: 2px; cursor: pointer; width: 280px;
+}
+
+/* Dashboard */
+#screen-dashboard { display: none; }
+.dash-header {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px;
+}
+.dash-title { font-family: var(--head); font-size: 18px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; }
+.ctrl-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.ctrl-btn {
+  font-family: var(--head); font-size: 12px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 8px 16px; border: none; border-radius: 2px; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.ctrl-btn:hover { opacity: 0.85; }
+.btn-start { background: var(--green); color: #fff; }
+.btn-reset { background: var(--red); color: #fff; }
+
+.dash-body { padding: 20px 24px; }
+.status-bar {
+  font-size: 11px; color: var(--text3); letter-spacing: 2px;
+  margin-bottom: 16px; padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.status-bar span { color: var(--accent); }
+
+/* Teams grid */
+.teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.team-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 2px; overflow: hidden;
+}
+.team-card-header {
+  padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.team-name { font-family: var(--head); font-size: 16px; font-weight: 600; letter-spacing: 2px; }
+.team-players { font-size: 10px; color: var(--text3); }
+.team-card-body { padding: 14px; }
+.progress-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.progress-label { font-size: 10px; color: var(--text3); letter-spacing: 1px; min-width: 60px; }
+.progress-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+.progress-val { font-size: 11px; color: var(--text2); min-width: 40px; text-align: right; }
+.current-enigma { font-size: 11px; color: var(--text2); margin-bottom: 10px; }
+.team-actions { display: flex; gap: 6px; }
+.team-btn {
+  flex: 1; font-family: var(--mono); font-size: 10px; letter-spacing: 1px;
+  padding: 6px 8px; border-radius: 2px; border: 1px solid var(--border);
+  background: var(--bg3); color: var(--text2); cursor: pointer; transition: all 0.15s;
+  text-align: center;
+}
+.team-btn:hover { border-color: var(--accent); color: var(--accent); }
+.done-badge {
+  background: rgba(56,161,105,0.15); border: 1px solid var(--green);
+  color: var(--green); font-size: 11px; padding: 4px 10px;
+  border-radius: 2px; letter-spacing: 1px;
+}
+
+/* Rankings */
+.rankings-section { margin-top: 20px; }
+.section-title {
+  font-size: 10px; letter-spacing: 3px; color: var(--text3);
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.ranking-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 14px; background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 2px; margin-bottom: 6px; font-size: 12px;
+}
+.rank-pos { color: var(--accent); min-width: 28px; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<!-- Auth -->
+<div id="screen-auth">
+  <div class="auth-title">⚡ Poste de Commandement</div>
+  <div class="auth-sub">Opération Acapulco — Accès organisateur</div>
+  <input type="password" class="auth-input" id="pwd" placeholder="Mot de passe" autocomplete="off">
+  <button class="auth-btn" id="btn-auth">Accéder</button>
+  <div id="auth-error" style="color:#e53e3e;font-size:11px;letter-spacing:1px;display:none">Mot de passe incorrect</div>
+</div>
+
+<!-- Dashboard -->
+<div id="screen-dashboard">
+  <div class="dash-header">
+    <div class="dash-title">⚡ PC — Opération Acapulco</div>
+    <div class="ctrl-row">
+      <button class="ctrl-btn btn-start" id="btn-start">▶ Lancer</button>
+      <button class="ctrl-btn btn-reset" id="btn-reset">↺ Réinitialiser</button>
+    </div>
+  </div>
+  <div class="dash-body">
+    <div class="status-bar" id="status-bar">Statut : <span>En attente du lancement</span></div>
+    <div class="teams-grid" id="teams-grid"></div>
+    <div class="rankings-section" id="rankings-section" style="display:none">
+      <div class="section-title">🏆 Classement final</div>
+      <div id="rankings-list"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+const TEAM_COLORS = { Alpha:'#e53e3e', Bravo:'#3182ce', Charlie:'#38a169', Delta:'#d69e2e', Echo:'#805ad5' };
+const TEAM_EMOJI = { Alpha:'🔴', Bravo:'🔵', Charlie:'🟢', Delta:'🟡', Echo:'🟣' };
+
+document.getElementById('btn-auth').addEventListener('click', () => {
+  socket.emit('admin-auth', { password: document.getElementById('pwd').value });
+});
+document.getElementById('pwd').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-auth').click();
+});
+
+socket.on('admin-ok', () => {
+  document.getElementById('screen-auth').style.display = 'none';
+  document.getElementById('screen-dashboard').style.display = 'block';
+});
+socket.on('admin-fail', () => {
+  document.getElementById('auth-error').style.display = 'block';
+});
+
+document.getElementById('btn-start').addEventListener('click', () => socket.emit('admin-start'));
+document.getElementById('btn-reset').addEventListener('click', () => { if(confirm('Réinitialiser toute la partie ?')) socket.emit('admin-reset'); });
+
+socket.on('admin-state', ({ teams, gameStarted, gameFinished, rankings }) => {
+  const sb = document.getElementById('status-bar');
+  sb.innerHTML = gameFinished ? 'Statut : <span style="color:#38a169">Partie terminée</span>' :
+    gameStarted ? 'Statut : <span style="color:#e8b84b">Partie en cours</span>' :
+    'Statut : <span>En attente du lancement</span>';
+
+  const grid = document.getElementById('teams-grid');
+  grid.innerHTML = '';
+  teams.forEach(t => {
+    const color = TEAM_COLORS[t.name] || '#e8b84b';
+    const pct = Math.round((t.progress / t.total) * 100);
+    const card = document.createElement('div');
+    card.className = 'team-card';
+    card.style.borderTop = `3px solid ${color}`;
+    card.innerHTML = `
+      <div class="team-card-header">
+        <div class="team-name" style="color:${color}">${TEAM_EMOJI[t.name]||''} ${t.name}</div>
+        <div class="team-players">${t.players} agent${t.players>1?'s':''}</div>
+      </div>
+      <div class="team-card-body">
+        ${t.completed ? '<div class="done-badge">✅ Affaire résolue</div>' : `
+        <div class="progress-row">
+          <span class="progress-label">Progression</span>
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+          <span class="progress-val">${t.progress}/${t.total}</span>
+        </div>
+        <div class="current-enigma">📍 ${t.currentTitle}</div>
+        <div class="team-actions">
+          <button class="team-btn" onclick="sendHint('${t.name}')">💡 Indice</button>
+          <button class="team-btn" onclick="advance('${t.name}')">⏭ Passer étape</button>
+        </div>`}
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  if (rankings && rankings.length > 0) {
+    document.getElementById('rankings-section').style.display = 'block';
+    const list = document.getElementById('rankings-list');
+    list.innerHTML = '';
+    rankings.forEach((r, i) => {
+      const el = document.createElement('div');
+      el.className = 'ranking-item';
+      el.innerHTML = `<span class="rank-pos">${['🥇','🥈','🥉'][i]||i+1}</span><span>${TEAM_EMOJI[r.teamName]||''} Brigade ${r.teamName}</span><span style="margin-left:auto;color:var(--text3)">${r.time}</span>`;
+      list.appendChild(el);
+    });
+  }
+});
+
+function sendHint(team) { socket.emit('admin-hint', { teamName: team }); }
+function advance(team) { if(confirm(`Passer à l'étape suivante pour la brigade ${team} ?`)) socket.emit('admin-advance', { teamName: team }); }
+</script>
+</body>
+</html>

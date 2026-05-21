@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pièce à conviction — Zone Bravo</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@600&display=swap" rel="stylesheet">
+<style>
+:root { --accent: #3182ce; --bg: #0a0c0f; --bg2: #111318; --border: #2a2f3a; --text: #e8eaf0; --text2: #9aa0b0; --mono: 'Share Tech Mono', monospace; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--mono); min-height: 100vh; padding: 20px; }
+.evidence-card {
+  max-width: 480px; margin: 0 auto;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 2px; overflow: hidden;
+}
+.evidence-header {
+  background: var(--accent); color: #fff;
+  padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.evidence-header-title { font-family: 'Oswald', sans-serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; }
+.evidence-header-ref { font-size: 11px; opacity: 0.8; }
+.stamp {
+  border: 2px solid var(--accent); color: var(--accent);
+  font-size: 13px; letter-spacing: 3px; padding: 4px 12px;
+  transform: rotate(-8deg); display: inline-block;
+  margin: 16px 20px 0; text-transform: uppercase;
+}
+.evidence-body { padding: 20px; }
+.label { font-size: 9px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; margin-top: 16px; }
+.label:first-child { margin-top: 0; }
+.value { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.register-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
+.register-table th {
+  text-align: left; font-size: 9px; letter-spacing: 2px; color: var(--accent);
+  text-transform: uppercase; padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.register-table td { padding: 7px 8px; border-bottom: 1px solid #1a1f28; color: var(--text2); vertical-align: middle; }
+.register-table tr:last-child td { border-bottom: none; }
+.redacted {
+  background: #e8eaf0; color: #e8eaf0; border-radius: 2px;
+  user-select: none; padding: 0 4px;
+}
+.pv-num { color: var(--accent); }
+.note-box {
+  background: #1a1f28; border: 1px solid var(--border); border-radius: 4px;
+  padding: 12px 16px; margin-top: 12px; font-size: 12px; color: var(--text2); line-height: 1.7;
+}
+.highlight { color: var(--text); font-weight: bold; }
+.footer {
+  padding: 12px 20px; border-top: 1px solid var(--border);
+  font-size: 10px; color: #5a6070; display: flex; justify-content: space-between;
+}
+</style>
+</head>
+<body>
+<div class="evidence-card">
+  <div class="evidence-header">
+    <span class="evidence-header-title">🔵 Zone Bravo — Pièce à conviction B</span>
+    <span class="evidence-header-ref">REF : PM-2025-114/B</span>
+  </div>
+  <div style="text-align:center">
+    <span class="stamp">Classifié</span>
+  </div>
+  <div class="evidence-body">
+    <div class="label">Nature de la pièce</div>
+    <div class="value">Registre partiel de procès-verbaux — source anonyme</div>
+
+    <div class="label">Contexte</div>
+    <div class="value">Ce registre a été transmis à la PM par courrier anonyme trois jours avant la mort de Moreau. Les noms des agents impliqués ont été caviardés. Seuls les numéros de PV et les montants sont lisibles.</div>
+
+    <div class="label">Extrait du registre</div>
+    <table class="register-table">
+      <thead>
+        <tr>
+          <th>N° PV</th>
+          <th>Date</th>
+          <th>Montant (€)</th>
+          <th>Agent</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pv-num">PV-2023-0041</td>
+          <td>03/02/23</td>
+          <td>135 €</td>
+          <td><span class="redacted">████████</span></td>
+          <td>FALSIFIÉ</td>
+        </tr>
+        <tr>
+          <td class="pv-num">PV-2023-0078</td>
+          <td>14/03/23</td>
+          <td>90 €</td>
+          <td><span class="redacted">████████</span></td>
+          <td>FALSIFIÉ</td>
+        </tr>
+        <tr>
+          <td class="pv-num">PV-2023-0112</td>
+          <td>02/04/23</td>
+          <td>200 €</td>
+          <td><span class="redacted">████████</span></td>
+          <td>FALSIFIÉ</td>
+        </tr>
+        <tr>
+          <td class="pv-num">PV-2023-0155</td>
+          <td>19/05/23</td>
+          <td>135 €</td>
+          <td><span class="redacted">████████</span></td>
+          <td>FALSIFIÉ</td>
+        </tr>
+        <tr>
+          <td class="pv-num">PV-2023-0201</td>
+          <td>07/07/23</td>
+          <td>90 €</td>
+          <td><span class="redacted">████████</span></td>
+          <td>FALSIFIÉ</td>
+        </tr>
+        <tr>
+          <td class="pv-num">PV-2023-0244</td>
+          <td>22/09/23</td>
+          <td>375 €</td>
+          <td><span class="redacted">████████</span></td>
+          <td>FALSIFIÉ</td>
+        </tr>
+        <tr>
+          <td class="pv-num">PV-2023-0289</td>
+          <td>11/11/23</td>
+          <td>135 €</td>
+          <td><span class="redacted">████████</span></td>
+          <td>FALSIFIÉ</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note-box">
+      ⚠️ QUESTION : Combien de PV falsifiés sont listés dans ce registre ?<br>
+      → <span class="highlight">Comptez les lignes et entrez ce chiffre sur votre interface brigade.</span>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Opération Acapulco</span>
+    <span>Scellé n°2025-SCL-002/B</span>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opération Acapulco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c0f;
+  --bg2: #111318;
+  --bg3: #181c22;
+  --border: #2a2f3a;
+  --border2: #3a4050;
+  --accent: #e8b84b;
+  --accent2: #c4982d;
+  --red: #e53e3e;
+  --blue: #3182ce;
+  --green: #38a169;
+  --text: #e8eaf0;
+  --text2: #9aa0b0;
+  --text3: #5a6070;
+  --mono: 'Share Tech Mono', monospace;
+  --head: 'Oswald', sans-serif;
+  --body: 'Source Sans 3', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--body); overflow: hidden; }
+
+/* ── Scan lines effet ──────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+}
+
+/* ── Layout ────────────────────────────────────────── */
+.screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; }
+.screen.active { display: flex; }
+
+/* ── Header badge ──────────────────────────────────── */
+.op-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+.op-title {
+  font-family: var(--head);
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: var(--text);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.op-sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  margin-bottom: 32px;
+}
+
+/* ── Card ──────────────────────────────────────────── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 28px;
+  width: 100%;
+  max-width: 480px;
+}
+.card-title {
+  font-family: var(--head);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  color: var(--text2);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Form elements ─────────────────────────────────── */
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.field input, .field select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  appearance: none;
+}
+.field input:focus, .field select:focus { border-color: var(--accent); }
+.field select option { background: var(--bg3); }
+
+/* ── Boutons ───────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--head);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  width: 100%;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #0a0c0f;
+}
+.btn-primary:hover { background: var(--accent2); }
+.btn-secondary {
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border2);
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Écran attente ─────────────────────────────────── */
+#screen-waiting .wait-icon {
+  width: 64px; height: 64px;
+  border: 2px solid var(--accent);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+  margin-bottom: 24px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.team-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 10px 20px;
+  font-family: var(--head);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* ── Énigme ────────────────────────────────────────── */
+#screen-enigma {
+  justify-content: flex-start;
+  padding: 0;
+  overflow-y: auto;
+}
+.enigma-header {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+.enigma-header-left { display: flex; align-items: center; gap: 10px; }
+.progress-text {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 1px;
+}
+.team-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.phase-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-transform: uppercase;
+  background: rgba(232,184,75,0.1);
+  border: 1px solid rgba(232,184,75,0.2);
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+.progress-bar-wrap {
+  height: 2px;
+  background: var(--border);
+  width: 100%;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.4s ease;
+}
+
+.enigma-body {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 24px 20px 100px;
+}
+.enigma-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.enigma-title {
+  font-family: var(--head);
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 20px;
+  line-height: 1.1;
+}
+.enigma-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text2);
+  white-space: pre-line;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--bg3);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── QCM ───────────────────────────────────────────── */
+.options-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.option-btn {
+  text-align: left;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text2);
+  font-family: var(--body);
+  font-size: 14px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 12px;
+}
+.option-btn:hover { border-color: var(--accent); color: var(--text); }
+.option-btn.selected { border-color: var(--accent); color: var(--accent); background: rgba(232,184,75,0.08); }
+.option-letter {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  min-width: 16px;
+}
+
+/* ── Anagramme ─────────────────────────────────────── */
+.letters-display {
+  font-family: var(--mono);
+  font-size: clamp(16px, 4vw, 22px);
+  letter-spacing: 6px;
+  color: var(--accent);
+  text-align: center;
+  padding: 20px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  margin-bottom: 16px;
+  word-break: break-all;
+}
+
+/* ── Cadenas ───────────────────────────────────────── */
+.padlock-display {
+  display: flex; justify-content: center; gap: 8px;
+  margin-bottom: 20px;
+}
+.padlock-digit {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.padlock-digit button {
+  width: 44px; height: 32px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.padlock-digit button:hover { border-color: var(--accent); color: var(--accent); }
+.padlock-digit-val {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--text);
+  min-width: 44px;
+  text-align: center;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  padding: 8px 0;
+}
+
+/* ── Grille mots cachés ────────────────────────────── */
+.word-grid {
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 4px;
+  color: var(--text2);
+  line-height: 2;
+  padding: 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* ── Coffre progressif ─────────────────────────────── */
+.vault-locks {
+  display: flex; justify-content: center; gap: 6px;
+  margin-bottom: 20px;
+}
+.vault-lock {
+  width: 32px; height: 40px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s;
+}
+.vault-lock.open { border-color: var(--green); background: rgba(56,161,105,0.1); }
+.vault-question {
+  font-family: var(--head);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+
+/* ── Réponse QR ─────────────────────────────────────── */
+.qr-instruction {
+  text-align: center;
+  padding: 20px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+.qr-emoji { font-size: 48px; margin-bottom: 12px; }
+.qr-text { font-size: 14px; color: var(--text2); line-height: 1.6; }
+
+/* ── Input réponse ─────────────────────────────────── */
+.answer-input-wrap { position: relative; margin-bottom: 12px; }
+.answer-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 16px;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.answer-input:focus { border-color: var(--accent); }
+.answer-input.wrong { border-color: var(--red); animation: shake 0.4s; }
+.answer-input.correct { border-color: var(--green); }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+/* ── Boutons action ────────────────────────────────── */
+.action-row {
+  display: flex; gap: 8px;
+}
+.btn-hint {
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.btn-hint:hover { border-color: var(--accent); color: var(--accent); }
+
+.hint-box {
+  background: rgba(232,184,75,0.08);
+  border: 1px solid rgba(232,184,75,0.3);
+  border-radius: 2px;
+  padding: 12px 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  display: none;
+}
+.hint-box.visible { display: block; }
+
+/* ── Feedback correct ──────────────────────────────── */
+#screen-correct {
+  text-align: center;
+}
+.correct-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.correct-title {
+  font-family: var(--head);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--green);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* ── Victoire ──────────────────────────────────────── */
+#screen-won { text-align: center; }
+.won-title {
+  font-family: var(--head);
+  font-size: clamp(32px, 8vw, 56px);
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+@keyframes glow {
+  from { text-shadow: 0 0 10px rgba(232,184,75,0.3); }
+  to { text-shadow: 0 0 30px rgba(232,184,75,0.8), 0 0 60px rgba(232,184,75,0.4); }
+}
+.rankings {
+  width: 100%;
+  max-width: 360px;
+  margin-top: 24px;
+}
+.ranking-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  margin-bottom: 6px;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.ranking-pos {
+  color: var(--accent);
+  min-width: 24px;
+  font-weight: bold;
+}
+
+/* ── Map ────────────────────────────────────────────── */
+.map-placeholder {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 20px;
+  margin-bottom: 16px;
+  text-align: center;
+  position: relative;
+  min-height: 200px;
+  display: flex; align-items: center; justify-content: center;
+}
+.map-svg { width: 100%; max-width: 320px; }
+
+/* ── Énigme texte (riddle) ───────────────────────────── */
+.riddle-box {
+  font-family: var(--head);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--text);
+  text-align: center;
+  padding: 24px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  margin-bottom: 20px;
+  font-style: italic;
+  letter-spacing: 1px;
+}
+
+/* ── Navigation ─────────────────────────────────────── */
+.nav-bar {
+  display: flex; gap: 8px;
+  margin-bottom: 20px;
+}
+.nav-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 18px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+/* ── Scrollbar ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ══ ÉCRAN REJOINDRE ══════════════════════════════════ -->
+<div id="screen-join" class="screen active">
+  <div class="op-badge">▌ Dossier confidentiel</div>
+  <div class="op-title">Opération Acapulco</div>
+  <div class="op-sub">Affaire Moreau — Enquête interne</div>
+  <div class="card">
+    <div class="card-title">Identification agent</div>
+    <div class="field">
+      <label>Prénom</label>
+      <input type="text" id="input-name" placeholder="Votre prénom" maxlength="20" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Brigade</label>
+      <select id="input-team">
+        <option value="">— Choisissez votre brigade —</option>
+        <option value="Alpha">🔴 Brigade Alpha</option>
+        <option value="Bravo">🔵 Brigade Bravo</option>
+        <option value="Charlie">🟢 Brigade Charlie</option>
+        <option value="Delta">🟡 Brigade Delta</option>
+        <option value="Echo">🟣 Brigade Echo</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" id="btn-join">Intégrer la brigade</button>
+  </div>
+</div>
+
+<!-- ══ ÉCRAN ATTENTE ════════════════════════════════════ -->
+<div id="screen-waiting" class="screen">
+  <div class="wait-icon"></div>
+  <div class="op-badge">Agent enregistré</div>
+  <div id="wait-team" class="team-badge"></div>
+  <div class="op-sub" style="margin-bottom:0">En attente du lancement par l'organisateur…</div>
+</div>
+
+<!-- ══ ÉCRAN ÉNIGME ════════════════════════════════════ -->
+<div id="screen-enigma" class="screen">
+  <div class="enigma-header">
+    <div class="enigma-header-left">
+      <div class="team-dot" id="header-dot"></div>
+      <span class="progress-text" id="header-progress">Étape 1/23</span>
+    </div>
+    <span class="phase-tag" id="header-phase"></span>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="enigma-body">
+    <div class="nav-bar">
+      <button class="nav-btn" id="btn-prev" disabled title="Étape précédente">◀</button>
+      <button class="nav-btn" id="btn-next" disabled title="Étape suivante">▶</button>
+    </div>
+    <div class="enigma-num" id="enigma-num"></div>
+    <div class="enigma-title" id="enigma-title"></div>
+    <div id="enigma-content"></div>
+  </div>
+</div>
+
+<!-- ══ ÉCRAN BONNE RÉPONSE ══════════════════════════════ -->
+<div id="screen-correct" class="screen">
+  <div class="correct-icon">✅</div>
+  <div class="correct-title">Bonne réponse !</div>
+  <div class="op-sub">Indice validé — suite de l'enquête…</div>
+</div>
+
+<!-- ══ ÉCRAN VICTOIRE ═══════════════════════════════════ -->
+<div id="screen-won" class="screen">
+  <div class="op-badge">🏆 Opération levée</div>
+  <div class="won-title">Affaire résolue</div>
+  <div class="op-sub">Félicitations à la brigade</div>
+  <div class="team-badge" id="won-team"></div>
+  <div class="rankings" id="won-rankings"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
