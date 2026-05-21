@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Codes — Agence Acapulco v2</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      color: #f5c518;
+      font-family: 'Georgia', serif;
+    }
+
+    /* ── Une zone = une page A5 ─────────────────────────────── */
+    .page {
+      width: 148mm;
+      min-height: 210mm;
+      margin: 0 auto;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12mm 10mm;
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .page:last-child {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    /* ── En-tête agence ─────────────────────────────────────── */
+    .agency {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #a08900;
+      margin-bottom: 6mm;
+      text-align: center;
+    }
+
+    /* ── Titre de zone ──────────────────────────────────────── */
+    .zone-title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #f5c518;
+      text-align: center;
+      margin-bottom: 8mm;
+      line-height: 1.3;
+      text-shadow: 0 0 12px rgba(245, 197, 24, 0.5);
+    }
+
+    /* ── Cadre QR ───────────────────────────────────────────── */
+    .qr-frame {
+      border: 2px solid #f5c518;
+      padding: 8mm;
+      background: #fff;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 7mm;
+      box-shadow: 0 0 20px rgba(245, 197, 24, 0.3);
+    }
+
+    .qr-frame canvas,
+    .qr-frame img {
+      display: block;
+    }
+
+    /* ── URL ────────────────────────────────────────────────── */
+    .qr-url {
+      font-size: 9px;
+      color: #a08900;
+      letter-spacing: 0.5px;
+      text-align: center;
+      word-break: break-all;
+      margin-bottom: 6mm;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ── Instruction ────────────────────────────────────────── */
+    .scan-instruction {
+      font-size: 13px;
+      color: #f5c518;
+      text-align: center;
+      letter-spacing: 1px;
+      font-style: italic;
+      margin-bottom: 8mm;
+    }
+
+    /* ── Séparateur bas ─────────────────────────────────────── */
+    .divider {
+      width: 60%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #f5c518, transparent);
+      margin-bottom: 6mm;
+    }
+
+    /* ── Badge CONFIDENTIEL ─────────────────────────────────── */
+    .confidential {
+      font-size: 9px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #6b5900;
+      text-align: center;
+    }
+
+    /* ── Barre couleur de la zone ───────────────────────────── */
+    .color-bar {
+      width: 80%;
+      height: 4px;
+      border-radius: 2px;
+      margin-bottom: 8mm;
+    }
+    .bar-red   { background: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
+    .bar-blue  { background: #3498db; box-shadow: 0 0 10px #3498db; }
+    .bar-green { background: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
+
+    /* ── Impression ─────────────────────────────────────────── */
+    @media print {
+      body {
+        background: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .page {
+        margin: 0;
+        width: 148mm;
+        min-height: 210mm;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* ── Bouton impression (masqué à l'impression) ──────────── */
+    .no-print {
+      text-align: center;
+      padding: 20px;
+      background: #111;
+    }
+    .btn-print {
+      background: #f5c518;
+      color: #000;
+      border: none;
+      padding: 12px 32px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+    .btn-print:hover {
+      background: #ffd740;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Bouton impression ──────────────────────────────────── -->
+  <div class="no-print">
+    <button class="btn-print" onclick="window.print()">🖨️ Imprimer les 3 QR codes</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       PAGE 1 — Zone Alpha 🔴 Ruban ROUGE
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="page">
+    <div class="agency">Agence Acapulco — Pièce à conviction</div>
+    <div class="color-bar bar-red"></div>
+    <div class="zone-title">Zone Alpha 🔴<br>Ruban ROUGE</div>
+    <div class="qr-frame">
+      <div id="qr-alpha"></div>
+    </div>
+    <div class="qr-url">https://escape-acapulco-v2.onrender.com/clue/zone-alpha</div>
+    <div class="scan-instruction">📷 Scannez pour découvrir la pièce à conviction</div>
+    <div class="divider"></div>
+    <div class="confidential">Confidentiel — Ne pas divulguer</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       PAGE 2 — Zone Bravo 🔵 Ruban BLEU
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="page">
+    <div class="agency">Agence Acapulco — Pièce à conviction</div>
+    <div class="color-bar bar-blue"></div>
+    <div class="zone-title">Zone Bravo 🔵<br>Ruban BLEU</div>
+    <div class="qr-frame">
+      <div id="qr-bravo"></div>
+    </div>
+    <div class="qr-url">https://escape-acapulco-v2.onrender.com/clue/zone-bravo</div>
+    <div class="scan-instruction">📷 Scannez pour découvrir la pièce à conviction</div>
+    <div class="divider"></div>
+    <div class="confidential">Confidentiel — Ne pas divulguer</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       PAGE 3 — Zone Charlie 🟢 Ruban VERT
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="page">
+    <div class="agency">Agence Acapulco — Pièce à conviction</div>
+    <div class="color-bar bar-green"></div>
+    <div class="zone-title">Zone Charlie 🟢<br>Ruban VERT</div>
+    <div class="qr-frame">
+      <div id="qr-charlie"></div>
+    </div>
+    <div class="qr-url">https://escape-acapulco-v2.onrender.com/clue/zone-charlie</div>
+    <div class="scan-instruction">📷 Scannez pour découvrir la pièce à conviction</div>
+    <div class="divider"></div>
+    <div class="confidential">Confidentiel — Ne pas divulguer</div>
+  </div>
+
+  <script>
+    const zones = [
+      { id: 'qr-alpha',   url: 'https://escape-acapulco-v2.onrender.com/clue/zone-alpha' },
+      { id: 'qr-bravo',   url: 'https://escape-acapulco-v2.onrender.com/clue/zone-bravo' },
+      { id: 'qr-charlie', url: 'https://escape-acapulco-v2.onrender.com/clue/zone-charlie' }
+    ];
+
+    zones.forEach(({ id, url }) => {
+      new QRCode(document.getElementById(id), {
+        text: url,
+        width: 250,
+        height: 250,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    });
+  </script>
+</body>
+</html>
