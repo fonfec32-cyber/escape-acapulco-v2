@@ -166,7 +166,11 @@ function renderQcm(el, enigma, readonly) {
     grid.appendChild(btn);
   });
   el.appendChild(grid);
-  if (!readonly) el.appendChild(makeSubmitBtn(() => { if (state.selectedOption) submitAnswer(enigma.id, state.selectedOption); }));
+  if (!readonly) el.appendChild(makeSubmitBtn(() => {
+    const sel = el.querySelector('.option-btn.selected');
+    if (sel) { const opt = sel.textContent.replace(/^[A-D]/, '').trim(); submitAnswer(enigma.id, opt); }
+    else if (state.selectedOption) submitAnswer(enigma.id, state.selectedOption);
+  }));
 }
 
 // ── Code ──────────────────────────────────────────────────────────────────────
@@ -234,7 +238,7 @@ function renderMapPhoto(el, enigma, readonly) {
   el.appendChild(img);
   if (!readonly) {
     const inp = makeAnswerInput(enigma.id);
-    inp.input.placeholder = 'EX: B2';
+    inp.input.placeholder = 'COORDONNÉES DE ZONE…';
     el.appendChild(inp.wrap);
     el.appendChild(makeSubmitBtn(() => { const v = inp.input.value.trim(); if (v) submitAnswer(enigma.id, v, null, inp.input); }));
   }
@@ -298,152 +302,195 @@ function makePadlockUI(digits, valArr, readonly) {
 }
 
 
-// ── Puzzle scellé judiciaire ──────────────────────────────────────────────────
+// ── Mémo judiciaire ──────────────────────────────────────────────────────────
 function renderPuzzle(el, enigma, readonly) {
   el.appendChild(makeText(enigma.text));
 
-  // Les 6 fragments dans leur ordre AFFICHÉ (mélangé) : position affichée → numéro imprimé dessus
-  // Ordre logique correct (haut→bas) : 3-6-1-4-2-5
-  // Affiché dans cet ordre : fragment n°3, n°6, n°1, n°4, n°2, n°5
-  // Mais on affiche les fragments dans cet ordre visuel : 5,2,6,1,3,4
-  // avec leurs numéros imprimés dessus
-  const fragments = [
-    { num: 5, svg: scelleSVG(5) },
-    { num: 2, svg: scelleSVG(2) },
-    { num: 6, svg: scelleSVG(6) },
-    { num: 1, svg: scelleSVG(1) },
-    { num: 3, svg: scelleSVG(3) },
-    { num: 4, svg: scelleSVG(4) },
+  const svgIcons = {
+    badge: `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+      <polygon points="30,3 34,13 46,10 41,21 52,27 41,33 46,44 34,41 30,51 26,41 14,44 19,33 8,27 19,21 14,10 26,13" fill="#e8b84b" stroke="#c4982d" stroke-width="1.5"/>
+      <circle cx="30" cy="27" r="10" fill="#1a2030" stroke="#e8b84b" stroke-width="1.5"/>
+      <text x="30" y="24" font-family="Arial" font-size="5" font-weight="bold" fill="#e8b84b" text-anchor="middle">POLICE</text>
+      <text x="30" y="31" font-family="Arial" font-size="7" font-weight="bold" fill="#e8b84b" text-anchor="middle">PM</text>
+      <text x="30" y="38" font-family="Arial" font-size="4" fill="#c4982d" text-anchor="middle">★ ★ ★</text>
+    </svg>`,
+    menottes: `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+      <circle cx="17" cy="30" r="11" fill="none" stroke="#c0c0c0" stroke-width="3.5"/>
+      <circle cx="17" cy="30" r="6" fill="none" stroke="#c0c0c0" stroke-width="2"/>
+      <circle cx="43" cy="30" r="11" fill="none" stroke="#c0c0c0" stroke-width="3.5"/>
+      <circle cx="43" cy="30" r="6" fill="none" stroke="#c0c0c0" stroke-width="2"/>
+      <rect x="26" y="27" width="8" height="6" rx="1" fill="#b0b0b0"/>
+      <line x1="23" y1="30" x2="26" y2="30" stroke="#c0c0c0" stroke-width="3"/>
+      <line x1="34" y1="30" x2="37" y2="30" stroke="#c0c0c0" stroke-width="3"/>
+      <rect x="13" y="17" width="8" height="5" rx="1" fill="none" stroke="#c0c0c0" stroke-width="1.5"/>
+      <rect x="39" y="17" width="8" height="5" rx="1" fill="none" stroke="#c0c0c0" stroke-width="1.5"/>
+    </svg>`,
+    pistolet: `<svg viewBox="0 0 70 60" xmlns="http://www.w3.org/2000/svg" width="54" height="46">
+      <rect x="28" y="19" width="36" height="8" rx="1.5" fill="#4a4a4a"/>
+      <rect x="62" y="20" width="4" height="6" rx="0.5" fill="#333"/>
+      <rect x="60" y="16" width="3" height="4" rx="0.5" fill="#777"/>
+      <rect x="24" y="17" width="38" height="12" rx="2" fill="#3a3a3a" stroke="#555" stroke-width="0.8"/>
+      <line x1="26" y1="21" x2="60" y2="21" stroke="#222" stroke-width="1.5"/>
+      <line x1="26" y1="26" x2="60" y2="26" stroke="#222" stroke-width="1.5"/>
+      <line x1="52" y1="18" x2="52" y2="28" stroke="#555" stroke-width="1"/>
+      <line x1="55" y1="18" x2="55" y2="28" stroke="#555" stroke-width="1"/>
+      <line x1="58" y1="18" x2="58" y2="28" stroke="#555" stroke-width="1"/>
+      <path d="M10 27 L24 27 L24 29 L28 29 L28 17 L24 17 L24 27" fill="#444"/>
+      <rect x="10" y="27" width="18" height="4" rx="0" fill="#444"/>
+      <path d="M10 31 L22 31 L20 53 Q19 56 16 56 L12 56 Q9 56 9 53 Z" fill="#5a3520" stroke="#3a2010" stroke-width="0.8"/>
+      <line x1="11" y1="35" x2="20" y2="35" stroke="#3a2010" stroke-width="0.6" opacity="0.7"/>
+      <line x1="11" y1="39" x2="19" y2="39" stroke="#3a2010" stroke-width="0.6" opacity="0.7"/>
+      <line x1="11" y1="43" x2="19" y2="43" stroke="#3a2010" stroke-width="0.6" opacity="0.7"/>
+      <line x1="11" y1="47" x2="18" y2="47" stroke="#3a2010" stroke-width="0.6" opacity="0.7"/>
+      <rect x="11" y="43" width="9" height="12" rx="1" fill="#3a3a3a" stroke="#222" stroke-width="0.5"/>
+      <path d="M16 31 Q18 37 16 43" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+      <path d="M12 31 Q16 41 22 31" fill="none" stroke="#555" stroke-width="1.5"/>
+      <text x="38" y="25" font-family="Arial" font-size="4" fill="#666" text-anchor="middle">PM-9</text>
+    </svg>`,
+    talkie: `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+      <rect x="18" y="8" width="24" height="44" rx="4" fill="#2a2a3a" stroke="#4a4a5a" stroke-width="1.5"/>
+      <rect x="20" y="10" width="20" height="12" rx="2" fill="#1a3a2a" stroke="#38a169" stroke-width="1"/>
+      <text x="30" y="19" font-family="monospace" font-size="6" fill="#38a169" text-anchor="middle">────</text>
+      <rect x="21" y="25" width="18" height="3" rx="1" fill="#e8b84b"/>
+      <circle cx="25" cy="34" r="2.5" fill="#e53e3e"/>
+      <circle cx="30" cy="34" r="2.5" fill="#4a4a5a"/>
+      <circle cx="35" cy="34" r="2.5" fill="#38a169"/>
+      <rect x="22" y="40" width="16" height="8" rx="2" fill="#1a1a2a" stroke="#3a3a4a" stroke-width="1"/>
+      <line x1="24" y1="43" x2="36" y2="43" stroke="#3a3a4a" stroke-width="1"/>
+      <line x1="24" y1="46" x2="36" y2="46" stroke="#3a3a4a" stroke-width="1"/>
+      <rect x="24" y="4" width="12" height="6" rx="2" fill="#333" stroke="#4a4a5a" stroke-width="1"/>
+    </svg>`,
+    gyrophare: `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+      <rect x="16" y="36" width="28" height="10" rx="3" fill="#222"/>
+      <ellipse cx="30" cy="30" rx="14" ry="10" fill="#cc1111"/>
+      <ellipse cx="30" cy="30" rx="10" ry="7" fill="#e53e3e"/>
+      <ellipse cx="30" cy="30" rx="6" ry="4" fill="white" opacity="0.9"/>
+      <ellipse cx="30" cy="30" rx="3" ry="2" fill="#e8b84b"/>
+      <line x1="30" y1="20" x2="22" y2="12" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+      <line x1="30" y1="20" x2="38" y2="12" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+      <line x1="16" y1="30" x2="8" y2="30" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+      <line x1="44" y1="30" x2="52" y2="30" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+      <rect x="20" y="44" width="20" height="5" rx="2" fill="#111"/>
+    </svg>`,
+    voiture: `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+      <rect x="6" y="30" width="48" height="18" rx="4" fill="#1a2a4a"/>
+      <path d="M12 30 L16 18 L44 18 L48 30 Z" fill="#1a2a4a"/>
+      <rect x="18" y="20" width="10" height="8" rx="1" fill="#b8d4f4" opacity="0.8"/>
+      <rect x="32" y="20" width="10" height="8" rx="1" fill="#b8d4f4" opacity="0.8"/>
+      <circle cx="16" cy="48" r="5" fill="#222" stroke="#555" stroke-width="1.5"/>
+      <circle cx="16" cy="48" r="2" fill="#444"/>
+      <circle cx="44" cy="48" r="5" fill="#222" stroke="#555" stroke-width="1.5"/>
+      <circle cx="44" cy="48" r="2" fill="#444"/>
+      <rect x="6" y="32" width="48" height="3" fill="#e8b84b" opacity="0.7"/>
+      <rect x="7" y="33" width="6" height="4" rx="1" fill="#e53e3e" opacity="0.9"/>
+      <rect x="47" y="33" width="6" height="4" rx="1" fill="#e53e3e" opacity="0.9"/>
+      <rect x="20" y="35" width="20" height="5" rx="1" fill="#1a3a6a"/>
+      <text x="30" y="39.5" font-family="Arial" font-size="4" font-weight="bold" fill="white" text-anchor="middle">POLICE</text>
+    </svg>`
+  };
+
+  const iconList = [
+    { key:'badge', label:'Badge' },
+    { key:'menottes', label:'Menottes' },
+    { key:'pistolet', label:'Pistolet' },
+    { key:'talkie', label:'Talkie-Walkie' },
+    { key:'gyrophare', label:'Gyrophare' },
+    { key:'voiture', label:'Voiture' }
   ];
 
-  const grid = document.createElement('div');
-  grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:16px;';
+  // 12 cartes : 2 de chaque
+  let cards = [];
+  iconList.forEach((ic, i) => {
+    cards.push({ ...ic, uid: i });
+    cards.push({ ...ic, uid: i });
+  });
+  // Mélange Fisher-Yates
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
 
-  fragments.forEach(f => {
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'position:relative;border:1px solid var(--border);overflow:hidden;';
-    const numBadge = document.createElement('div');
-    numBadge.style.cssText = 'position:absolute;top:4px;left:4px;z-index:2;background:#e53e3e;color:white;font-family:var(--mono);font-size:13px;font-weight:bold;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:2px;';
-    numBadge.textContent = f.num;
-    wrap.innerHTML = f.svg;
-    wrap.appendChild(numBadge);
-    grid.appendChild(wrap);
+  // Grille
+  const grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px;max-width:420px';
+
+  let flipped = [], matched = 0, locked = false;
+
+  const pairsInfo = document.createElement('div');
+  pairsInfo.style.cssText = 'font-family:var(--mono);font-size:11px;color:var(--text2);margin-bottom:10px;letter-spacing:1px';
+  pairsInfo.innerHTML = 'Paires trouvées : <span id="pair-count" style="color:var(--accent);font-weight:bold">0</span> / 6';
+  el.appendChild(pairsInfo);
+
+  const answerBox = document.createElement('div');
+  answerBox.style.cssText = 'display:none;background:#0d1420;border:1px solid var(--accent);border-radius:2px;padding:14px;text-align:center;margin-bottom:16px;font-family:var(--mono);';
+  answerBox.innerHTML = '<div style="font-size:11px;color:var(--text2);margin-bottom:8px;letter-spacing:1px">✅ TOUTES LES PAIRES TROUVÉES — NUMÉRO DU SCELLÉ :</div><div style="font-size:28px;font-weight:bold;color:var(--accent);letter-spacing:8px;margin:8px 0">24037</div><div style="font-size:11px;color:var(--text2)">Entrez ce numéro sur votre interface brigade</div>';
+
+  cards.forEach((card) => {
+    const cardEl = document.createElement('div');
+    cardEl.style.cssText = 'aspect-ratio:1;cursor:pointer;perspective:600px;position:relative;border-radius:4px;';
+
+    const inner = document.createElement('div');
+    inner.style.cssText = 'width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.4s;border-radius:4px;';
+
+    const front = document.createElement('div');
+    front.style.cssText = 'position:absolute;inset:0;border-radius:4px;backface-visibility:hidden;background:#0a0c0f;border:1.5px solid #e8b84b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;';
+    front.innerHTML = '<span style="font-family:var(--head);font-size:7px;letter-spacing:2px;color:#e8b84b;text-transform:uppercase;font-weight:600">AGENCE</span><span style="font-family:var(--head);font-size:7px;letter-spacing:2px;color:#e8b84b;text-transform:uppercase;font-weight:600">ACAPULCO</span><span style="font-size:8px;color:#3a4050;margin-top:2px">▪ ▪ ▪</span>';
+
+    const back = document.createElement('div');
+    back.style.cssText = 'position:absolute;inset:0;border-radius:4px;backface-visibility:hidden;background:#111820;border:1.5px solid #3a4558;transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;';
+    back.innerHTML = card.svgIcons + svgIcons[card.key] + '<span style="font-size:6px;color:#9aa0b0;letter-spacing:1px;text-transform:uppercase">' + card.label + '</span>';
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    cardEl.appendChild(inner);
+
+    if (!readonly) {
+      cardEl.addEventListener('click', () => {
+        if (locked || inner.dataset.flipped === '1' || inner.dataset.matched === '1') return;
+        inner.style.transform = 'rotateY(180deg)';
+        inner.dataset.flipped = '1';
+        flipped.push({ inner, card });
+
+        if (flipped.length === 2) {
+          locked = true;
+          setTimeout(() => {
+            if (flipped[0].card.uid === flipped[1].card.uid) {
+              flipped[0].inner.dataset.matched = '1';
+              flipped[1].inner.dataset.matched = '1';
+              flipped[0].inner.style.borderColor = '#38a169';
+              flipped[1].inner.style.borderColor = '#38a169';
+              matched++;
+              const pc = document.getElementById('pair-count');
+              if (pc) pc.textContent = matched;
+              if (matched === 6) {
+                answerBox.style.display = 'block';
+                if (!readonly) {
+                  const inp = makeAnswerInput(enigma.id);
+                  inp.input.placeholder = 'NUMÉRO DU SCELLÉ…';
+                  el.appendChild(inp.wrap);
+                  el.appendChild(makeSubmitBtn(() => {
+                    const v = inp.input.value.trim();
+                    if (v) submitAnswer(enigma.id, v, null, inp.input);
+                  }));
+                }
+              }
+            } else {
+              flipped[0].inner.style.transform = '';
+              flipped[0].inner.dataset.flipped = '0';
+              flipped[1].inner.style.transform = '';
+              flipped[1].inner.dataset.flipped = '0';
+            }
+            flipped = []; locked = false;
+          }, 900);
+        }
+      });
+    }
+
+    grid.appendChild(cardEl);
   });
 
   el.appendChild(grid);
-
-  if (!readonly) {
-    const inp = makeAnswerInput(enigma.id);
-    inp.input.placeholder = 'EX : 3-1-5-2-6-4';
-    el.appendChild(inp.wrap);
-    el.appendChild(makeSubmitBtn(() => {
-      const v = inp.input.value.trim();
-      if (v) submitAnswer(enigma.id, v, null, inp.input);
-    }));
-  }
-}
-
-function scelleSVG(fragment) {
-  // Scellé judiciaire complet divisé en 6 bandes horizontales
-  // viewBox total : 0 0 300 540 → chaque fragment = 90px de haut
-  const h = 90;
-  const y = (fragment - 1) * h;
-  return `<svg viewBox="0 ${y} 300 ${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
-    <!-- Fond sac plastique -->
-    <rect x="0" y="0" width="300" height="540" fill="#e8e8e0"/>
-    <!-- Liseré gauche/droit -->
-    <rect x="0" y="0" width="8" height="540" fill="#c8c8b8"/>
-    <rect x="292" y="0" width="8" height="540" fill="#c8c8b8"/>
-
-    <!-- ZONE 1 : En-tête haut (y=0 à y=90) -->
-    <!-- Titre SCELLE JUDICIAIRE -->
-    <text x="150" y="28" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#1a1a1a" text-anchor="middle" letter-spacing="1">SCELLÉ JUDICIAIRE N°</text>
-    <!-- Numéro code barres style -->
-    <rect x="90" y="38" width="120" height="22" rx="2" fill="white" stroke="#aaa" stroke-width="0.5"/>
-    <text x="150" y="54" font-family="monospace" font-size="12" font-weight="bold" fill="#1a1a1a" text-anchor="middle" letter-spacing="2">00175955</text>
-    <!-- Petits traits code-barres décoratifs -->
-    <line x1="90" y1="38" x2="90" y2="60" stroke="#555" stroke-width="1.5"/>
-    <line x1="95" y1="38" x2="95" y2="60" stroke="#555" stroke-width="0.5"/>
-    <line x1="98" y1="38" x2="98" y2="60" stroke="#555" stroke-width="1"/>
-    <line x1="103" y1="38" x2="103" y2="60" stroke="#555" stroke-width="0.5"/>
-    <line x1="200" y1="38" x2="200" y2="60" stroke="#555" stroke-width="1"/>
-    <line x1="205" y1="38" x2="205" y2="60" stroke="#555" stroke-width="0.5"/>
-    <line x1="208" y1="38" x2="208" y2="60" stroke="#555" stroke-width="1.5"/>
-    <!-- Textes latéraux rotatifs simulés -->
-    <text x="4" y="70" font-family="Arial,sans-serif" font-size="5" fill="#999" transform="rotate(-90,4,70)">SCELLÉ JUDICIAIRE</text>
-
-    <!-- ZONE 2 : Bandeau rouge NE PAS OUVRIR (y=90 à y=180) -->
-    <rect x="8" y="90" width="284" height="50" fill="#cc1111"/>
-    <text x="150" y="120" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="white" text-anchor="middle" letter-spacing="2">NE PAS OUVRIR — SCELLÉ JUDICIAIRE — NE PAS OUVRIR</text>
-    <!-- Numéro sur bandeau -->
-    <rect x="8" y="140" width="284" height="40" fill="#d4d4c4"/>
-    <text x="230" y="163" font-family="monospace" font-size="11" font-weight="bold" fill="#cc1111" text-anchor="middle">00175955</text>
-
-    <!-- ZONE 3 : Tableau formulaire partie haute (y=180 à y=270) -->
-    <!-- Fond formulaire -->
-    <rect x="20" y="185" width="260" height="80" fill="white" stroke="#888" stroke-width="0.5"/>
-    <!-- Lignes internes -->
-    <line x1="20" y1="205" x2="280" y2="205" stroke="#888" stroke-width="0.5"/>
-    <line x1="110" y1="185" x2="110" y2="265" stroke="#888" stroke-width="0.5"/>
-    <!-- Labels -->
-    <text x="25" y="198" font-family="Arial,sans-serif" font-size="6" fill="#333">SCELLÉ N°</text>
-    <text x="115" y="193" font-family="Arial,sans-serif" font-size="5.5" fill="#333">PARQUET N°</text>
-    <text x="115" y="201" font-family="Arial,sans-serif" font-size="5.5" fill="#333">INSTRUCTION N°</text>
-    <text x="115" y="209" font-family="Arial,sans-serif" font-size="5.5" fill="#333">DATE DE L'AUDITION</text>
-    <!-- Valeurs -->
-    <text x="25" y="220" font-family="monospace" font-size="7" font-weight="bold" fill="#cc1111">PM-2025-114</text>
-    <text x="115" y="225" font-family="monospace" font-size="6" fill="#333">17/05/2025</text>
-    <!-- 2ème ligne tableau -->
-    <line x1="20" y1="240" x2="280" y2="240" stroke="#888" stroke-width="0.5"/>
-    <text x="150" y="252" font-family="Arial,sans-serif" font-size="6" fill="#333" text-anchor="middle">NATURE DE L'INFRACTION</text>
-    <text x="150" y="260" font-family="Arial,sans-serif" font-size="6" fill="#555" text-anchor="middle">HOMICIDE VOLONTAIRE — AFFAIRE MOREAU</text>
-
-    <!-- ZONE 4 : Tableau formulaire partie milieu (y=270 à y=360) -->
-    <rect x="20" y="270" width="260" height="85" fill="white" stroke="#888" stroke-width="0.5"/>
-    <line x1="20" y1="290" x2="280" y2="290" stroke="#888" stroke-width="0.5"/>
-    <line x1="107" y1="270" x2="107" y2="355" stroke="#888" stroke-width="0.5"/>
-    <line x1="194" y1="270" x2="194" y2="355" stroke="#888" stroke-width="0.5"/>
-    <text x="63" y="283" font-family="Arial,sans-serif" font-size="6" fill="#333" text-anchor="middle">TÉMOIN(S)</text>
-    <text x="150" y="283" font-family="Arial,sans-serif" font-size="6" fill="#333" text-anchor="middle">PARTIE(S) CIVILE(S)</text>
-    <text x="237" y="280" font-family="Arial,sans-serif" font-size="5.5" fill="#333" text-anchor="middle">PERSONNE(S) MISE(S)</text>
-    <text x="237" y="288" font-family="Arial,sans-serif" font-size="5.5" fill="#333" text-anchor="middle">EN EXAMEN</text>
-    <!-- Noms fictifs -->
-    <text x="63" y="320" font-family="Arial,sans-serif" font-size="6" fill="#555" text-anchor="middle">A. PETIT</text>
-    <text x="150" y="320" font-family="Arial,sans-serif" font-size="6" fill="#555" text-anchor="middle">—</text>
-    <text x="237" y="320" font-family="Arial,sans-serif" font-size="6" fill="#cc1111" text-anchor="middle">EN COURS</text>
-    <!-- Ligne nature objet -->
-    <line x1="20" y1="340" x2="280" y2="340" stroke="#888" stroke-width="0.5"/>
-    <text x="150" y="350" font-family="Arial,sans-serif" font-size="6" fill="#333" text-anchor="middle">NATURE DE L'OBJET — CONTENU DU SCELLÉ</text>
-
-    <!-- ZONE 5 : Signatures + watermark (y=360 à y=450) -->
-    <rect x="20" y="360" width="260" height="85" fill="white" stroke="#888" stroke-width="0.5"/>
-    <!-- Watermark SJP -->
-    <text x="150" y="415" font-family="Arial,sans-serif" font-size="48" font-weight="bold" fill="#e8e8e8" text-anchor="middle" opacity="0.6">SJP</text>
-    <!-- Lignes signatures -->
-    <line x1="20" y1="380" x2="280" y2="380" stroke="#888" stroke-width="0.5"/>
-    <line x1="107" y1="360" x2="107" y2="445" stroke="#888" stroke-width="0.5"/>
-    <line x1="194" y1="360" x2="194" y2="445" stroke="#888" stroke-width="0.5"/>
-    <text x="30" y="373" font-family="Arial,sans-serif" font-size="5.5" fill="#333">TÉMOIN(S)</text>
-    <text x="55" y="373" font-family="Arial,sans-serif" font-size="5.5" fill="#555">(signature)</text>
-    <text x="115" y="373" font-family="Arial,sans-serif" font-size="5.5" fill="#333">JUGE D'INSTRUCTION</text>
-    <text x="175" y="373" font-family="Arial,sans-serif" font-size="5.5" fill="#555">(signature)</text>
-    <text x="200" y="373" font-family="Arial,sans-serif" font-size="5.5" fill="#555">(signature)</text>
-    <text x="30" y="400" font-family="Arial,sans-serif" font-size="5.5" fill="#333">PARTIE(S) CIVILE(S)</text>
-    <text x="80" y="400" font-family="Arial,sans-serif" font-size="5.5" fill="#555">(signature)</text>
-    <text x="30" y="420" font-family="Arial,sans-serif" font-size="5.5" fill="#333">PERSONNE(S) MISE(S) EN EXAMEN</text>
-    <text x="30" y="432" font-family="Arial,sans-serif" font-size="5.5" fill="#555">(signature)</text>
-    <text x="115" y="410" font-family="Arial,sans-serif" font-size="5.5" fill="#333">GREFFIER</text>
-    <text x="148" y="410" font-family="Arial,sans-serif" font-size="5.5" fill="#555">(signature)</text>
-
-    <!-- ZONE 6 : Bas du document (y=450 à y=540) -->
-    <rect x="20" y="455" width="260" height="50" fill="white" stroke="#888" stroke-width="0.5"/>
-    <text x="150" y="470" font-family="Arial,sans-serif" font-size="6" fill="#333" text-anchor="middle">EMPLACEMENT RÉSERVÉ AU GREFFE</text>
-    <text x="150" y="488" font-family="monospace" font-size="6" fill="#666" text-anchor="middle">22 46 07 95 7 (0) 03 + tél</text>
-    <text x="150" y="498" font-family="monospace" font-size="6" fill="#666" text-anchor="middle">mac.exploitationtbj-sjp.www</text>
-    <!-- Bas : bande inversée POUR OUVRIR -->
-    <rect x="8" y="510" width="284" height="25" fill="#d4d4c4"/>
-    <text x="150" y="525" font-family="Arial,sans-serif" font-size="7" font-weight="bold" fill="#cc1111" text-anchor="middle">◄ POUR OUVRIR ►</text>
-  </svg>`;
+  el.appendChild(answerBox);
 }
 
 // ── Grille mots cachés ────────────────────────────────────────────────────────

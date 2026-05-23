@@ -92,15 +92,15 @@ const enigmas = [
     id: 10, type: 'wordsearch',
     phase: 'PHASE 2 — Collecte des preuves',
     title: 'La marque du véhicule',
-    text: 'Une grille de lettres a été retrouvée dans les affaires de Moreau. La marque du véhicule suspect y est cachée horizontalement.\n\nTrouvez et saisissez la marque.',
+    text: 'Une grille de lettres a été retrouvée dans les affaires de Moreau. La marque du véhicule suspect y est cachée dans la grille.\n\nTrouvez et saisissez la marque.',
     grid: [
       'AMLOPRQSBT',
-      'ZPEUGEOTXK',
-      'VBCDFGHJML',
+      'ZXVBCDFGHJ',
+      'KLMTRSWQPA',
+      'NBFXQTZMVL',
       'PKQRSTUYWZ',
       'XABCDEFGHI',
-      'JKLMNOPQRS',
-      'TUVWXYZABC',
+      'ZPEUGEOTXK',
       'DEFGHIJKLM'
     ],
     answer: 'PEUGEOT'
@@ -118,10 +118,10 @@ const enigmas = [
   {
     id: 12, type: 'puzzle',
     phase: 'PHASE 3 — Analyse des indices',
-    title: 'Reconstitution du scellé',
-    text: 'Le scellé judiciaire PM-2025-114 a été photographié puis découpé en 6 fragments numérotés et mélangés.\n\nObservez les fragments et entrez l\'ordre correct pour reconstituer le document de haut en bas.\n\nFormat obligatoire avec tirets : ex. 3-1-5-2-6-4',
-    answer: '3-6-1-4-2-5',
-    acceptedAnswers: ['3-6-1-4-2-5']
+    title: 'Mémo judiciaire',
+    text: 'Un scellé judiciaire a été fragmenté et dissimulé. Retrouvez les 6 paires d\'objets policiers pour révéler le numéro du scellé.\n\nRetournez les cartes deux par deux pour trouver les paires identiques.',
+    answer: '24037',
+    acceptedAnswers: ['24037']
   },
   {
     id: 13, type: 'qrcode',
@@ -193,7 +193,7 @@ const enigmas = [
     id: 21, type: 'code',
     phase: 'PHASE 5 — Clôture de l\'affaire',
     title: 'La chronologie de l\'affaire',
-    text: 'Remettez ces 5 événements dans l\'ordre chronologique et entrez la séquence (ex: 3-1-5-2-4) :\n\n1. Moreau retrouvé sans vie dans le parc\n2. Moreau rédige un rapport compromettant\n3. Un réseau illégal est mis en place\n4. Moreau reçoit un SMS de menace anonyme\n5. Une décision criminelle est prise pour faire taire Moreau',
+    text: 'Remettez ces 5 événements dans l\'ordre chronologique et entrez la séquence avec des tirets (ex: 3-1-5-2-4) :\n\n1. Moreau retrouvé sans vie dans le parc\n2. Moreau rédige un rapport compromettant\n3. Un réseau illégal est mis en place\n4. Moreau reçoit un SMS de menace anonyme\n5. Une décision criminelle est prise pour faire taire Moreau',
     answer: '3-2-4-5-1'
   },
   {
