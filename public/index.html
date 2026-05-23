@@ -540,6 +540,36 @@ body::before {
 .nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
 .nav-btn:disabled { opacity: 0.3; cursor: default; }
 
+/* ── Timer ──────────────────────────────────────────── */
+.timer-bar {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 6px 16px;
+}
+.timer-label {
+  font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 2px;
+}
+#timer-display {
+  font-family: var(--mono); font-size: 22px; font-weight: bold;
+  color: var(--text2); letter-spacing: 4px; transition: color 0.5s;
+}
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+/* ── Bombe ──────────────────────────────────────────── */
+#screen-exploded { text-align: center; background: var(--bg); }
+.bomb-icon { font-size: 80px; margin-bottom: 20px; animation: shake 0.5s infinite; }
+@keyframes shake {
+  0%,100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+.bomb-title {
+  font-family: var(--head); font-size: clamp(28px, 7vw, 48px);
+  font-weight: 700; letter-spacing: 6px; color: var(--red);
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.bomb-sub { font-family: var(--mono); font-size: 13px; color: var(--text2); letter-spacing: 1px; }
+
 /* ── Scrollbar ─────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
@@ -584,6 +614,10 @@ body::before {
 
 <!-- ══ ÉCRAN ÉNIGME ════════════════════════════════════ -->
 <div id="screen-enigma" class="screen">
+  <div class="timer-bar">
+    <span class="timer-label">⏱ TEMPS RESTANT</span>
+    <span id="timer-display">60:00</span>
+  </div>
   <div class="enigma-header">
     <div class="enigma-header-left">
       <div class="team-dot" id="header-dot"></div>
@@ -620,6 +654,14 @@ body::before {
   <div class="op-sub">Félicitations à la brigade</div>
   <div class="team-badge" id="won-team"></div>
   <div class="rankings" id="won-rankings"></div>
+</div>
+
+<!-- ══ ÉCRAN BOMBE ════════════════════════════════════ -->
+<div id="screen-exploded" class="screen">
+  <div class="bomb-icon">💥</div>
+  <div class="bomb-title">Mission échouée</div>
+  <div class="bomb-sub" style="margin-bottom:16px">Le temps imparti est écoulé.<br>L'Opération Acapulco a explosé.</div>
+  <div style="font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:1px">L'enquête n'a pas abouti à temps.<br>Le commanditaire reste dans l'ombre.</div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
