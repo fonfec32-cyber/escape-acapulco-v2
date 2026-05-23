@@ -91,6 +91,7 @@ socket.on('enigma', (data) => {
   state.currentEnigma = data.enigma;
   state.vaultStep = 0; state.hintVisible = false;
   state.selectedOption = null; state.padlockValues = [0,0,0,0]; state.padlock3Values = [0,0,0];
+  // Reset complet pour éviter les conflits multi-sessions
   if (!state.history.find(e => e.id === data.enigma.id)) state.history.push(data.enigma);
   state.viewingIndex = -1;
   renderEnigma(data.enigma, data.progress, data.total);
@@ -153,23 +154,25 @@ function renderQcm(el, enigma, readonly) {
   const grid = document.createElement('div');
   grid.className = 'options-grid';
   const letters = ['A','B','C','D'];
+  let localSelected = null;
   enigma.options.forEach((opt, i) => {
     const btn = document.createElement('button');
     btn.className = 'option-btn';
     btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}`;
     if (!readonly) {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected'); state.selectedOption = opt;
+        grid.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        localSelected = opt;
+        state.selectedOption = opt;
       });
     } else btn.disabled = true;
     grid.appendChild(btn);
   });
   el.appendChild(grid);
   if (!readonly) el.appendChild(makeSubmitBtn(() => {
-    const sel = el.querySelector('.option-btn.selected');
-    if (sel) { const opt = sel.textContent.replace(/^[A-D]/, '').trim(); submitAnswer(enigma.id, opt); }
-    else if (state.selectedOption) submitAnswer(enigma.id, state.selectedOption);
+    const answer = localSelected || state.selectedOption;
+    if (answer) submitAnswer(enigma.id, answer);
   }));
 }
 
